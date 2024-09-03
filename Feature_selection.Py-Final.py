@@ -11,26 +11,18 @@ Feature selection process
 """
 
 
-###############################################################################
-###############################################################################
-###########  数据的归一化///  Min-Max Scaler for data preprocessing  ############
-
 import os
 import pandas as pd
 from matplotlib import pyplot as plt, pyplot
 from sklearn.preprocessing import MinMaxScaler
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML-Ystich/ML/Dataset-raw'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
 # Read data set
 DATA_Wave1 = pd.read_excel('RAW-DATA-Wave1.xlsx')
-# Normalize Wave1
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(DATA_Wave1)
-X_scaled = pd.DataFrame(scaler.transform(DATA_Wave1), columns=DATA_Wave1.columns)
 # Extract feature matrix
-X = X_scaled.iloc[:, 1:26]
+X = DATA_Wave1.iloc[:, 1:26]
 # Extract dependent variable
 y = DATA_Wave1.iloc[:, 26]
 
@@ -43,12 +35,25 @@ y = DATA_Wave1.iloc[:, 26]
 from sklearn.model_selection import train_test_split, StratifiedKFold
 
 # train:test==7:3
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+X_train, x_test, Y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
 # Export the training set and test set
-DATA_Wave1_train = pd.concat([x_train, y_train], axis=1)
+DATA_Wave1_train = pd.concat([X_train, Y_train], axis=1)
 DATA_Wave1_test = pd.concat([x_test, y_test], axis=1)
 DATA_Wave1_train.to_excel("DATA_Wave1_train.xlsx", index=False)
 DATA_Wave1_test.to_excel("DATA_Wave1_test.xlsx", index=False)
+
+###############################################################################
+###############################################################################
+###########  数据的归一化///  Min-Max Scaler for data preprocessing  ############
+
+def scal_data(data):
+    scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
+    scaler.fit(data)
+    new_data = pd.DataFrame(scaler.transform(data), columns=data.columns)
+    x = new_data.iloc[:, :-1]
+    y = new_data.iloc[:, -1]
+    return x, y
+x_train, y_train = scal_data(DATA_Wave1_train)
 
 
 # ###############################################################################
@@ -71,7 +76,7 @@ for feature, importance in zip(features, importances):
         'Feature': feature,
         'Importance': importance})
 rf_importance_list = pd.DataFrame(rf_importance_list)
-rf_importance_list.to_excel("rf_importance.xlsx", index=False)
+# rf_importance_list.to_excel("rf_importance.xlsx", index=False)
 print(rf_importance_list)
 
 # xgb weight
@@ -85,7 +90,7 @@ for feature, importance in zip(features, importances_weight.values()):
         'Feature': feature,
         'Importance': importance})
 xgb_importance_weight = pd.DataFrame(xgb_importance_weight)
-xgb_importance_weight.to_excel("xgb_importance_weight.xlsx", index=False)
+# xgb_importance_weight.to_excel("xgb_importance_weight.xlsx", index=False)
 print(xgb_importance_weight)
 
 # xgb gain
@@ -99,7 +104,7 @@ for feature, importance in zip(features, importances_gain.values()):
         'Feature': feature,
         'Importance': importance})
 xgb_importance_gain = pd.DataFrame(xgb_importance_gain)
-xgb_importance_gain.to_excel("xgb_importance_gain.xlsx", index=False)
+# xgb_importance_gain.to_excel("xgb_importance_gain.xlsx", index=False)
 print(xgb_importance_gain)
 
 # xgb cover
@@ -113,7 +118,7 @@ for feature, importance in zip(features, importances_cover.values()):
         'Feature': feature,
         'Importance': importance})
 xgb_importance_cover = pd.DataFrame(xgb_importance_cover)
-xgb_importance_cover.to_excel("xgb_importance_cover.xlsx", index=False)
+# xgb_importance_cover.to_excel("xgb_importance_cover.xlsx", index=False)
 print(xgb_importance_cover)
 
 xgb.get_booster().feature_names = features
@@ -125,9 +130,25 @@ pyplot.show()
 # Based on gain: SLE.D1/SLE.D3/EI.D2/EI.D3/SS.D3
 # Based on cover: SLE.D1/SLE.D3/SLE.D5/SS.D3
 
+# Generate feature filtered data sets for model construction
+# Specify variables (columns) to keep
+weight_keep = ['SLE.D1', 'SLE.D2', 'SLE.D4', 'SLE.D5','EI.D2', 'EI.D3', 'EI.D4', 'CS.D2', 'Outcome']
+gain_keep = ['SLE.D1', 'SLE.D3', 'EI.D2', 'EI.D3', 'SS.D3', 'Outcome']
+cover_keep = ['SLE.D1', 'SLE.D3', 'SLE.D5', 'SS.D3', 'Outcome']
+# Create a new data box, keeping the specified variables
+weight_df = DATA_Wave1_train[weight_keep]
+gain_df = DATA_Wave1_train[gain_keep]
+cover_df = DATA_Wave1_train[cover_keep]
+weight_df.to_excel("Data_Wave1_train_weight.xlsx", index=False)
+gain_df.to_excel("Data_Wave1_train_gain.xlsx", index=False)
+cover_df.to_excel("Data_Wave1_train_cover.xlsx", index=False)
+
+
 ###############################################################################
 ###############################################################################
 #######  剪枝对照 /// *Sensitivity Analysis==Purning [LASSO Regression]  #######
+
+
 import warnings
 warnings.filterwarnings(action='ignore')
 import pandas as pd
@@ -222,12 +243,17 @@ plt.show()
 
 # Based on lasso: exclude EI.D4/SLE.D3/CS.D2
 
+# Generate feature filtered data sets for model construction
+# Specify variables (columns) to keep
+lasso_exclude = ['EI.D4', 'SLE.D3', 'CS.D2']
+# Create a new data box, keeping the specified variables
+lasso_df = DATA_Wave1_train.drop(columns=lasso_exclude)
+lasso_df.to_excel("Data_Wave1_train_lasso.xlsx", index=False)
 
 
 ###############################################################################
 ###############################################################################
 ###################  剪枝 /// *Purning [RF and XGBoost-SHAP]  #################
-
 
 
 import shap
@@ -297,11 +323,11 @@ for feature, mean_shap in mean_shap_dict.items():
           'Feature': feature,
           'Mean SHAP Value': mean_shap})
 xgb_shap_values = pd.DataFrame(xgb_shap)
-xgb_shap_values.to_excel("shap_xgb.xlsx", index=False)
+# xgb_shap_values.to_excel("shap_xgb.xlsx", index=False)
 
 # Visualization of the average SHAP value
 shap.summary_plot(xgb_average_shap, features=x_train.drop(columns=['index']), feature_names=x_train.drop(columns=['index']).columns, show=False)
-#plt.title("Average SHAP values after repeated cross-validation in XGBoost")
+# plt.title("Average SHAP values after repeated cross-validation in XGBoost")
 plt.show()
 
 # Visualization of variation in SHAP values (range)
@@ -312,7 +338,7 @@ xgb_range_long_df = pd.DataFrame(xgb_shap_range, columns=x_train.drop(columns=['
 mean_abs_effects = xgb_range_long_df.groupby(['Features']).mean()
 xgb_standardized = xgb_range_long_df.groupby(xgb_range_long_df.Features).transform(lambda x: x / x.mean())
 xgb_standardized['Features'] = xgb_range_long_df.Features
-xgb_standardized.to_excel("shap_xgb_standardized.xlsx", index=False)
+# xgb_standardized.to_excel("shap_xgb_standardized.xlsx", index=False)
 # Plot
 # title = 'Range of SHAP values per feature across all cross-validation repeats in XGBoost'
 # title = ' Scaled Range of SHAP values per feature across all cross-validation repeats in XGBoost'
@@ -385,7 +411,7 @@ for feature, mean_shap in mean_shap_dict.items():
           'Feature': feature,
           'Mean SHAP Value': mean_shap})
 rf_shap_values = pd.DataFrame(rf_shap)
-rf_shap_values.to_excel("shap_rf.xlsx", index=False)
+# rf_shap_values.to_excel("shap_rf.xlsx", index=False)
 
 # Visualization of the average SHAP value
 shap.summary_plot(rf_average_shap, features=x_train.drop(columns=['index']), feature_names=x_train.drop(columns=['index']).columns, show=False)
@@ -400,7 +426,7 @@ rf_range_long_df = pd.DataFrame(rf_shap_range, columns=x_train.drop(columns=['in
 mean_abs_effects = rf_range_long_df.groupby(['Features']).mean()
 rf_standardized = rf_range_long_df.groupby(rf_range_long_df.Features).transform(lambda x: x / x.mean())
 rf_standardized['Features'] = rf_range_long_df.Features
-rf_standardized.to_excel("shap_rf_standardized.xlsx", index=False)
+# rf_standardized.to_excel("shap_rf_standardized.xlsx", index=False)
 # Plot
 # title = 'Range of SHAP values per feature across all cross-validation repeats in XGBoost'
 # title = ' Scaled Range of SHAP values per feature across all cross-validation repeats in XGBoost'
@@ -412,4 +438,12 @@ plt.show()
 
 # Intersection of Top 10
 # SLE.D1/SLE.D4/SLE.D5/SS.D3/EI.D2/EI.D3
+
+# Generate feature filtered data sets for model construction
+# Specify variables (columns) to keep
+shap_keep = ['SLE.D1', 'SLE.D4', 'SLE.D5','SS.D3', 'EI.D2', 'EI.D3', 'Outcome']
+# Create a new data box, keeping the specified variables
+shap_df = DATA_Wave1_train[shap_keep]
+shap_df.to_excel("Data_Wave1_train_SHAP.xlsx", index=False)
+
 
