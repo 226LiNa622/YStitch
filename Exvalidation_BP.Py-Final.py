@@ -23,16 +23,14 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
+
 # Set working path
-work_path = 'C:/Users/Administrator/Desktop/ML'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
-# Input the external validation set
-DATA_Wave2 = pd.read_excel('RAW-DATA-Wave2（外部验证）.xlsx')
-# Normalize-Wave2
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(DATA_Wave2)
-DATA_Wave2 = pd.DataFrame(scaler.transform(DATA_Wave2), columns=DATA_Wave2.columns)
-DATA_Wave2.to_excel("DATA_Wave2.xlsx", index=False)
+
+
+##-------------------------External validation: BPNN-------------------------##
+##---------------------------------------------------------------------------##
 
 class BPNet(nn.Module):
     def __init__(self, input_num, hide_num, output_num):
@@ -109,12 +107,12 @@ def get_results(device, file_path_train, file_path_val, model, initial_state, cr
     c_index = concordance_index(y_val_tensor.cpu().numpy(), val_outputs.cpu().numpy())
         
     results_list.append({
-            "ACC": acc,
             "AUC": auc,
+            "sensitivity": sensitivity,
+            "specificity": specificity,
+            "ACC": acc,
             "F-SCORE": f_score,
             "C-index": c_index,
-            "sensitivity": sensitivity,
-            "specificity": specificity
     })
     
     for pred, resp in zip(val_outputs.cpu().numpy(), y_val_tensor.cpu().numpy()):
@@ -142,8 +140,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2.xlsx"
+    file_path_train = "DATA_Wave1_train.xlsx"
+    file_path_val = "DATA_Wave2.xlsx"
     
     epochs = 250
     learning_rate = 0.1
@@ -167,8 +165,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_SHAP.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2_SHAP.xlsx"
+    file_path_train = "DATA_Wave1_train_SHAP.xlsx"
+    file_path_val = "DATA_Wave2_SHAP.xlsx"
     
     epochs = 200
     learning_rate = 0.1
@@ -192,8 +190,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_lasso.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2_lasso.xlsx"
+    file_path_train = "DATA_Wave1_train_lasso.xlsx"
+    file_path_val = "DATA_Wave2_lasso.xlsx"
     
     epochs = 200
     learning_rate = 0.1
@@ -217,8 +215,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_gain.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2_gain.xlsx"
+    file_path_train = "DATA_Wave1_train_gain.xlsx"
+    file_path_val = "DATA_Wave2_gain.xlsx"
     
     epochs = 200
     learning_rate = 0.1
@@ -242,8 +240,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_weight.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2_weight.xlsx"
+    file_path_train = "DATA_Wave1_train_weight.xlsx"
+    file_path_val = "DATA_Wave2_weight.xlsx"
    
     epochs = 200
     learning_rate = 0.08
@@ -267,8 +265,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    file_path_train = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_cover.xlsx"
-    file_path_val = "C:/Users/Administrator/Desktop/ML/DATA_Wave2_cover.xlsx"
+    file_path_train = "DATA_Wave1_train_cover.xlsx"
+    file_path_val = "DATA_Wave2_cover.xlsx"
    
     epochs = 200
     learning_rate = 0.1
