@@ -445,3 +445,4 @@ shap_keep = ['SLE.D1', 'SLE.D4', 'SLE.D5','SS.D3', 'EI.D2', 'EI.D3', 'Outcome']
 # Create a new data box, keeping the specified variables
 shap_df = DATA_Wave1_train[shap_keep]
 shap_df.to_excel("Data_Wave1_train_SHAP.xlsx", index=False)
+
