@@ -1,5 +1,5 @@
 # 这部分是绘制临床增益曲线的R代码
-# draw clinical impact curves
+# draw clinical impact curves of external validation
 # @author: Li Na and Hexiao Ding == Sun Yat-sen University
 # @Supervisor: Xia Wei == Sun Yat-sen University == xiaw23@mail.sysu.edu.cn
 
@@ -9,7 +9,7 @@ library(rms)
 library(rmda)
 library(glue)
 library(ggplot2)
-setwd("C:/Users/86198/Desktop/ML-Ystich/ML/Stage4-exvalidation/exvali-prob")
+setwd("D:/dataset")
 
 # origin+LR
 data<-read_excel("vali_prob_origin_AdaLR.xlsx")
