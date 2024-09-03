@@ -24,6 +24,46 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
 
+##----------------------------Data pre-processing----------------------------##
+##---------------------------------------------------------------------------##
+
+# Set working path
+work_path = 'D:/Dataset'
+os.chdir(work_path)
+# Read data set
+DATA_Wave2 = pd.read_excel('RAW-DATA-Wave2（外部验证）.xlsx')
+# Normalize-Wave2
+scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
+scaler.fit(DATA_Wave2)
+DATA_Wave2 = pd.DataFrame(scaler.transform(DATA_Wave2), columns=DATA_Wave2.columns)
+DATA_Wave2.to_excel("DATA_Wave2.xlsx", index=False)
+
+# Generate feature filtered data sets for model external validation
+# weight
+weight_keep = ['SLE.D1', 'SLE.D2', 'SLE.D4', 'SLE.D5','EI.D2', 'EI.D3', 'EI.D4', 'CS.D2', 'Outcome']
+weight_df = DATA_Wave2[weight_keep]
+weight_df.to_excel("DATA_Wave2_weight.xlsx", index=False)
+# gain
+gain_keep = ['SLE.D1', 'SLE.D3', 'EI.D2', 'EI.D3', 'SS.D3', 'Outcome']
+gain_df = DATA_Wave2[gain_keep]
+gain_df.to_excel("DATA_Wave2_gain.xlsx", index=False)
+# cover
+cover_keep = ['SLE.D1', 'SLE.D3', 'SLE.D5', 'SS.D3', 'Outcome']
+cover_df = DATA_Wave2[cover_keep]
+cover_df.to_excel("DATA_Wave2_cover.xlsx", index=False)
+# SHAP
+shap_keep = ['SLE.D1', 'SLE.D4', 'SLE.D5','SS.D3', 'EI.D2', 'EI.D3', 'Outcome']
+shap_df = DATA_Wave2[shap_keep]
+shap_df.to_excel("DATA_Wave2_SHAP.xlsx", index=False)
+# lasso
+lasso_exclude = ['EI.D4', 'SLE.D3', 'CS.D2']
+lasso_df = DATA_Wave2.drop(columns=lasso_exclude)
+lasso_df.to_excel("DATA_Wave2_lasso.xlsx", index=False)
+
+
+##------------------------External validation: Ada&LR------------------------##
+##---------------------------------------------------------------------------##
+
 # Define data read
 # training data
 def load_training_data(file_path_train):
@@ -66,11 +106,11 @@ def get_results(file_path_train, file_path_val, models):
         results_list.append({
             "Model": model_name,
             "AUC": auc,
+            "sensitivity": sensitivity,
+            "specificity": specificity,
             "ACC": acc,
             "F-score": f_score,
-            "C-index": c_index,
-            "sensitivity": sensitivity,
-            "specificity": specificity
+            "C-index": c_index
         })
         for pred, resp in zip(y_pred_proba, y_validation):
             prob_list.append({
@@ -82,13 +122,10 @@ def get_results(file_path_train, file_path_val, models):
     prob_AdaLR = pd.DataFrame(prob_list)
     return results_AdaLR, prob_AdaLR
 
-work_path = 'C:/Users/86198/Desktop/ML_1/ML'
-os.chdir(work_path)
-
 # origin
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2.xlsx"
+    file_path_train = "DATA_Wave1_train.xlsx"
+    file_path_val = "DATA_Wave2.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=116, learning_rate=0.5, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -99,8 +136,8 @@ if __name__ == "__main__":
     
 # SHAP
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train_SHAP.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2_SHAP.xlsx"
+    file_path_train = "DATA_Wave1_train_SHAP.xlsx"
+    file_path_val = "DATA_Wave2_SHAP.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=75, learning_rate=0.64, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -111,8 +148,8 @@ if __name__ == "__main__":
 
 # lasso
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train_lasso.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2_lasso.xlsx"
+    file_path_train = "DATA_Wave1_train_lasso.xlsx"
+    file_path_val = "DATA_Wave2_lasso.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=113, learning_rate=0.76, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -123,8 +160,8 @@ if __name__ == "__main__":
     
 # gain
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train_gain.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2_gain.xlsx"
+    file_path_train = "DATA_Wave1_train_gain.xlsx"
+    file_path_val = "DATA_Wave2_gain.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=120, learning_rate=0.86, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -135,8 +172,8 @@ if __name__ == "__main__":
     
 # weight
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train_weight.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2_weight.xlsx"
+    file_path_train = "DATA_Wave1_train_weight.xlsx"
+    file_path_val = "DATA_Wave2_weight.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=50, learning_rate=0.39, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -147,8 +184,8 @@ if __name__ == "__main__":
     
 # cover
 if __name__ == "__main__":
-    file_path_train = "C:/Users/86198/Desktop/ML_1/ML/Dataset-train/DATA_Wave1_train_cover.xlsx"
-    file_path_val = "C:/Users/86198/Desktop/ML_1/ML/Dataset-exvalidation/DATA_Wave2_cover.xlsx"
+    file_path_train = "DATA_Wave1_train_cover.xlsx"
+    file_path_val = "DATA_Wave2_cover.xlsx"
     models = {
         "AdaBoost": ensemble.AdaBoostClassifier(n_estimators=91, learning_rate=0.5800000000000001, random_state=0),
         "Logistic Regression": LogisticRegression(n_jobs=-1, random_state=0)
@@ -156,10 +193,4 @@ if __name__ == "__main__":
     results_AdaLR, prob_AdaLR = get_results(file_path_train, file_path_val, models)
     results_AdaLR.to_excel("vali_cover_AdaLR.xlsx", index=False)
     prob_AdaLR.to_excel("vali_prob_cover_AdaLR.xlsx", index=False)
-    
-
-
-
-
-
-
+  
