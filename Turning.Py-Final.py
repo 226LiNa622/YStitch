@@ -21,139 +21,81 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import MinMaxScaler
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
-
+# Min-Max normalization
+def scal_data(data):
+    scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
+    scaler.fit(data)
+    new_data = pd.DataFrame(scaler.transform(data), columns=data.columns)
+    x = new_data.iloc[:, :-1]
+    y = new_data.iloc[:, -1]
+    return x, y
 # Input Data
 # 1.Without prunning
 new_data1 = pd.read_excel("DATA_Wave1_train.xlsx")
-x1 = new_data1.iloc[:, 0:25]  # origin
-y1 = new_data1['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x1)
-x1 = pd.DataFrame(scaler.transform(x1))
+x1, y1 = scal_data(new_data1)
 # 2.prunning with SHAP
 new_data2 = pd.read_excel("DATA_Wave1_train_SHAP.xlsx")
-x2 = new_data2.iloc[:, 0:6]  # SHAP
-y2 = new_data2['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x2)
-x2 = pd.DataFrame(scaler.transform(x2))
+x2, y2 = scal_data(new_data2)
 # 3.prunning with Lasso
 new_data3 = pd.read_excel("DATA_Wave1_train_lasso.xlsx")
-x3 = new_data3.iloc[:, 0:22] # lasso
-y3 = new_data3['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x3)
-x3 = pd.DataFrame(scaler.transform(x3))
+x3, y3 = scal_data(new_data3)
 # 4.prunning with VIMP-gain
 new_data4 = pd.read_excel("DATA_Wave1_train_gain.xlsx")
-x4 = new_data4.iloc[:, 0:5] # VIMP-gain
-y4 = new_data4['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x4)
-x4 = pd.DataFrame(scaler.transform(x4))
+x4, y4 = scal_data(new_data4)
 # 5.prunning with VIMP-weight
 new_data5 = pd.read_excel("DATA_Wave1_train_weight.xlsx")
-x5 = new_data5.iloc[:, 0:8]  # VIMP-weight
-y5 = new_data5['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x5)
-x5 = pd.DataFrame(scaler.transform(x5))
+x5, y5 = scal_data(new_data5)
 # 6.prunning with VIMP-cover
 new_data6 = pd.read_excel("DATA_Wave1_train_cover.xlsx")
-x6 = new_data6.iloc[:, 0:4]  # VIMP-cover
-y6 = new_data6['Outcome']
-scaler = MinMaxScaler(feature_range=(0, 1), copy=True)
-scaler.fit(x6)
-x6 = pd.DataFrame(scaler.transform(x6))
+x6, y6 = scal_data(new_data6)
 
 
 ###############################################################################
 ###############################################################################
 ##############  Adaboost   调参///  Turning Stage of Adaboost  ################
 
+def ada_turn(x, y):
+    cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
+    # Turning-AdaBoost
+    AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
+    param_grid_ada = {
+        'n_estimators': np.linspace(50, 150, 2).astype(int),
+        'learning_rate': np.linspace(0.01, 1.0, 5)
+    }
+    grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
+    grid_search_ada.fit(x, y) 
+    return grid_search_ada.best_params_
 
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x1, y1) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
+# x1 y1
+best_params_1 = ada_turn(x1, y1) 
+print("AdaBoost's optimum parameter:", best_params_1)
+# AdaBoost's optimum parameter： {'learning_rate': 0.5, 'n_estimators': 116}
 
-#x1 y1
-#AdaBoost's optimum parameter： {'learning_rate': 0.5, 'n_estimators': 116}
+# x2 y2
+best_params_2 = ada_turn(x2, y2) 
+print("AdaBoost's optimum parameter:", best_params_2)
+# AdaBoost's optimum parameter: {'learning_rate': 0.64, 'n_estimators': 75}
 
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x2, y2) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
+# x3 y3
+best_params_3 = ada_turn(x3, y3) 
+print("AdaBoost's optimum parameter:", best_params_3)
+# AdaBoost's optimum parameter: {'learning_rate': 0.76, 'n_estimators': 113}
 
-#x2 y2
-#AdaBoost's optimum parameter: {'learning_rate': 0.64, 'n_estimators': 75}
+# x4 y4
+best_params_4 = ada_turn(x4, y4) 
+print("AdaBoost's optimum parameter:", best_params_4)
+# AdaBoost's optimum parameter: {'learning_rate': 0.86, 'n_estimators': 120}
 
-
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x3, y3) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
-
-#x3 y3
-#AdaBoost's optimum parameter: {'learning_rate': 0.76, 'n_estimators': 113}
-
-
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x4, y4) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
-
-#x4 y4
-#AdaBoost's optimum parameter: {'learning_rate': 0.86, 'n_estimators': 120}
-
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x5, y5) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
-
-#x5 y5
+# x5 y5
+best_params_5 = ada_turn(x5, y5) 
+print("AdaBoost's optimum parameter:", best_params_5)
 #AdaBoost's optimum parameter: {'learning_rate': 0.39, 'n_estimators': 50}
 
-
-# Turning-AdaBoost
-AdaBoost=ensemble.AdaBoostClassifier(random_state=0)
-param_grid_ada = {
-    'n_estimators': np.linspace(50, 150, 100).astype(int),
-    'learning_rate': np.linspace(0.01, 1.0, 100)
-}
-grid_search_ada = GridSearchCV(AdaBoost, param_grid=param_grid_ada, scoring="f1", cv=cv, n_jobs=-1)
-grid_search_ada.fit(x6, y6) 
-print("AdaBoost's optimum parameter:", grid_search_ada.best_params_)
-
-#x6 y6
+# x6 y6
+best_params_6 = ada_turn(x6, y6) 
+print("AdaBoost's optimum parameter:", best_params_6)
 #AdaBoost's optimum parameter: {'learning_rate': 0.5800000000000001, 'n_estimators': 91}
 
 
@@ -170,75 +112,35 @@ import os
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 
- 
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x1, y1) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
+def lr_turn(x, y):
+    cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
+    # Turning-LR
+    LR=LogisticRegression(random_state=0)
+    param_grid_lr = {
+        'max_iter': np.linspace(100, 1000, 100).astype(int)
+    }
+    grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
+    grid_search_lr.fit(x, y) 
+    return grid_search_lr.best_params_
 
-
-
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x2, y2) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
-
-
-
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x3, y3) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
-
-
-
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x4, y4) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
-
-
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x5, y5) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
-
-
-
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
-# Turning-LR
-LR=LogisticRegression(random_state=0)
-param_grid_lr = {
-    'max_iter': np.linspace(100, 1000, 100).astype(int)
-}
-grid_search_lr = GridSearchCV(LR, param_grid_lr, scoring="f1", cv=cv,n_jobs=-1)
-grid_search_lr.fit(x6, y6) 
-print("LR最佳参数组合：", grid_search_lr.best_params_)
+# x1 y1
+best_paramsl = lr_turn(x1, y1) 
+print("LR最佳参数组合：", best_paramsl)
+# x2 y2
+best_params2 = lr_turn(x2, y2) 
+print("LR最佳参数组合：", best_params2)
+# x3 y3
+best_params3 = lr_turn(x3, y3) 
+print("LR最佳参数组合：", best_params3)
+# x4 y4
+best_params4 = lr_turn(x4, y4) 
+print("LR最佳参数组合：", best_params4)
+# x5 y5
+best_params5 = lr_turn(x5, y5) 
+print("LR最佳参数组合：", best_params5)
+# x6 y6
+best_params6 = lr_turn(x6, y6) 
+print("LR最佳参数组合：", best_params6)
 
 # Without prunning: {'max_iter': 100}
 # prunning with SHAP: {'max_iter': 100}
@@ -246,7 +148,6 @@ print("LR最佳参数组合：", grid_search_lr.best_params_)
 # prunning with VIMP-gain:{'max_iter': 100}
 # prunning with VIMP-weight:{'max_iter': 100}
 # prunning with VIMP-cover:{'max_iter': 100}
-
 
 
 ###############################################################################
@@ -665,6 +566,3 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-
-
-
