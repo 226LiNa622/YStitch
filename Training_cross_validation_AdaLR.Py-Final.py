@@ -23,7 +23,7 @@ import os
 from sklearn.preprocessing import MinMaxScaler
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
 
 def load_data(file_path):
@@ -172,4 +172,4 @@ if __name__ == "__main__":
     results_AdaLR, prob_AdaLR = results(x, y, models)
     results_AdaLR.to_excel("kfold_cover_AdaLR.xlsx", index=False)
     prob_AdaLR.to_csv("kfold_prob_cover_AdaLR.csv", index=False)
-
+    
