@@ -20,7 +20,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML-Ystich/ML/Stage4-exvalidation/exvali-prob'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
 
 
