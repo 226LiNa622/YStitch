@@ -13,7 +13,7 @@ import os
 import pandas as pd
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML_1/ML/Stage3-test/boostrap-performance'
+work_path = 'D:/ML-Ystich/YStitch/Dataset'
 os.chdir(work_path)
 
 def calculating_CI(selected_columns):
@@ -36,40 +36,41 @@ def calculating_CI(selected_columns):
 if __name__ == "__main__":
     data = pd.read_excel('test-origin-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-origin-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-origin-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-origin-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_origin_BP.xlsx')
+    df = pd.read_excel('test-origin-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-origin-BP.xlsx", index=True)
     print(result_df)
+    
 # SHAP
 if __name__ == "__main__":
     data = pd.read_excel('test-SHAP-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-SHAP-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-SHAP-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-SHAP-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_SHAP_BP.xlsx')
+    df = pd.read_excel('test-SHAP-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-SHAP-BP.xlsx", index=True)
@@ -79,19 +80,19 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     data = pd.read_excel('test-lasso-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-lasso-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-lasso-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-lasso-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_lasso_BP.xlsx')
+    df = pd.read_excel('test-lasso-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-lasso-BP.xlsx", index=True)
@@ -101,19 +102,19 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     data = pd.read_excel('test-gain-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-gain-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-gain-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-gain-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_gain_BP.xlsx')
+    df = pd.read_excel('test-gain-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-gain-BP.xlsx", index=True)
@@ -123,19 +124,19 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     data = pd.read_excel('test-weight-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-weight-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-weight-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-weight-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_weight_BP.xlsx')
+    df = pd.read_excel('test-weight-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-weight-BP.xlsx", index=True)
@@ -145,20 +146,21 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     data = pd.read_excel('test-cover-AdaLR.xlsx')
     df = data[data['Model'] == 'Logistic Regression']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-cover-LR.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
     data = pd.read_excel('test-cover-AdaLR.xlsx')
     df = data[data['Model'] == 'AdaBoost']
-    selected_columns = df.iloc[:, 3:9]
+    selected_columns = df.iloc[:, 2:8]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-cover-Ada.xlsx", index=True)
     print(result_df)
 if __name__ == "__main__":
-    df = pd.read_excel('test_cover_BP.xlsx')
+    df = pd.read_excel('test-cover-BP.xlsx')
     selected_columns = df.iloc[:, 1:7]
     result_df = calculating_CI(selected_columns)
     result_df.to_excel("CI-test-cover-BP.xlsx", index=True)
     print(result_df)
+    
