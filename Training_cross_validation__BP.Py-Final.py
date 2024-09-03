@@ -9,7 +9,7 @@
 
 """
 
-
+import os
 import numpy as np
 import pandas as pd
 import torch
@@ -24,6 +24,9 @@ from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import MinMaxScaler
 
+# Set working path
+work_path = 'D:/Dataset'
+os.chdir(work_path)
 
 class BPNet(nn.Module):
     def __init__(self, input_num, hide_num, output_num):
@@ -47,7 +50,7 @@ def load_data(file_path):
 
 # origin
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train.xlsx"
+    file_path = "DATA_Wave1_train.xlsx"
     X, y = load_data(file_path)
 
     epochs = 250
@@ -126,7 +129,7 @@ if __name__ == "__main__":
 
 # SHAP
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_SHAP.xlsx"
+    file_path = "DATA_Wave1_train_SHAP.xlsx"
     X, y = load_data(file_path)
 
     epochs = 200
@@ -205,7 +208,7 @@ if __name__ == "__main__":
 
 # lasso
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_lasso.xlsx"
+    file_path = "DATA_Wave1_train_lasso.xlsx"
     X, y = load_data(file_path)
 
     epochs = 200
@@ -284,7 +287,7 @@ if __name__ == "__main__":
     
 # VIMP-gain
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_gain.xlsx"
+    file_path = "DATA_Wave1_train_gain.xlsx"
     X, y = load_data(file_path)
 
     epochs = 200
@@ -363,7 +366,7 @@ if __name__ == "__main__":
     
 # VIMP-weight
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_weight.xlsx"
+    file_path = "DATA_Wave1_train_weight.xlsx"
     X, y = load_data(file_path)
 
     epochs = 200
@@ -442,7 +445,7 @@ if __name__ == "__main__":
 
 # VIMP-cover
 if __name__ == "__main__":
-    file_path = "C:/Users/Administrator/Desktop/ML/DATA_Wave1_train_cover.xlsx"
+    file_path = "DATA_Wave1_train_cover.xlsx"
     X, y = load_data(file_path)
 
     epochs = 200
