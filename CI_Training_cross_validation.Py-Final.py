@@ -13,7 +13,7 @@ import os
 import pandas as pd
 
 # Set working path
-work_path = 'C:/Users/86198/Desktop/ML_1/ML/Stage2-train/10 fold invalidation/Results-performance'
+work_path = 'D:/dataset'
 os.chdir(work_path)
 
 def calculating_CI(selected_columns):
