@@ -23,7 +23,7 @@ from lifelines.utils import concordance_index
 from concurrent.futures import ProcessPoolExecutor
 
 # Set working path
-work_path = 'D:/ML-Ystich/YStitch/Dataset'
+work_path = 'D:/Dataset'
 os.chdir(work_path)
 
 class BPNet(nn.Module):
